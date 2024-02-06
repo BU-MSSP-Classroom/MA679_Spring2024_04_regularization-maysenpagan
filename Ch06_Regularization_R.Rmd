@@ -1,0 +1,829 @@
+---
+title: "Regularization"
+author: "Your Name"
+date: "2023-01-05"
+output: html_document
+bibliography: lecture.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message=FALSE,fig.align="center",fig.width=7,fig.height=2.5)
+pacman::p_load(
+       carx
+      , ggplot2
+      , ggExtra
+      , reshape2
+      , corrplot
+      , RColorBrewer
+      , lubridate
+      , AmesHousing
+      )
+```
+
+```{css,echo=FALSE}
+.btn {
+    border-width: 0 0px 0px 0px;
+    font-weight: normal;
+    text-transform: ;
+}
+
+.btn-default {
+    color: #2ecc71;
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+button.btn.collapsed:before
+{
+    content:'+' ;
+    display:block;
+    width:15px;
+}
+button.btn:before
+{
+    content:'-' ;
+    display:block;
+    width:15px;
+}
+```
+
+```{r,echo=FALSE}
+# Global parameter
+show_code <- TRUE
+```
+
+# Class Workbook {.tabset .tabset-fade .tabset-pills}
+
+## In class activity
+### Ames Housing data
+
+Please take a look at the Ames Hoursing data.
+```{r}
+library(AmesHousing)
+?ames_raw
+```
+
+### Questions
+
+Use data of `ames_raw` up to 2008 predict the housing price for the later years.
+```{r,echo=show_code}
+ames_raw_2008=ames_raw[ames_raw$`Yr Sold`<2008,]
+ames_raw_2009=ames_raw[ames_raw$`Yr Sold`>=2008,]
+```
+
+Use the same loss function calculator.
+```{r,echo=show_code}
+calc_loss<-function(prediction,actual){
+  difpred <- actual-prediction
+  RMSE <-sqrt(mean(difpred^2))
+  operation_loss<-abs(sum(difpred[difpred<0]))+sum(0.1*actual[difpred>0])
+  return(
+    list(RMSE,operation_loss
+         )
+  )
+}
+```
+
+Here are few rules:
+
+- You are not allowed to use the test data.
+- Try 3 of the regularization methods discussed in Ch6.
+- You should use a resampling method that is most appropriate for choosing the hyper parameters.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+- For each of the models you've run, can you interpret which variable impacts the outcome the most?
+Are the results consistent across different methods?
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+- Try these methods with bootstrap, are the results consistent?
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+- Based on all the models you've run, which result predicts the best?  Which one is most easy to understand?  Which method gives the most stable results?
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+## Problem Set
+
+### Best Subset
+
+In this exercise, we will generate simulated data, and will then use this data to perform best subset selection.
+
+(a) Use the `rnorm()` function to generate a predictor $X$ of length $n = 100$, as well as a noise vector $\epsilon$ of length $n = 100$.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+
+(b) Generate a response vector $Y$ of length $n = 100$ according to the model $$\mathbf{y} = \boldsymbol{\beta}_0 + \beta_1X + \beta2X^2 + \beta_3X^3 + \epsilon$$, where $\beta_{0}$ , $\beta_{1}$, $\beta_{2}$, and $\beta_{3}$ are constants of your choice.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+
+(c) Use the `regsubsets()` function to perform best subset selection in order to choose the best model containing the predictors $X$, $X^{2},\dots,X^{10}$. What is the best model obtained according to $C_p$ , BIC, and adjusted $R^2$ ? Show some plots to provide evidence for your answer, and report the coefficients of the best model obtained. Note you will need to use the `data.frame()` function to create a single data set containing both $X$ and $Y$.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(d) Repeat (c), using forward stepwise selection and also using backwards stepwise selection. How does your answer compare to the results in (c)?
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(e) Now fit a lasso model to the simulated data, again using $X$, $X^{2},\dots, X^{10}$ as predictors. Use cross-validation to select the optimal value of $\lambda$. Create plots of the cross-validation error as a function of $\lambda$. Report the resulting coefficient estimates, and discuss the results obtained.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(f) Now generate a response vector Y according to the model $$Y = \beta_{0} + \beta_{7}X^{7} + \epsilon,$$and perform best subset selection and the lasso. Discuss the results obtained.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+
+### College
+
+In this exercise, we will predict the number of applications received using the other variables in the College data set.
+```{r}
+data(College,package = "ISLR2")
+```
+
+(a) Split the data set into a training set and a test set.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+(b) Fit a linear model using least squares on the training set, and report the test error obtained.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(c) Fit a ridge regression model on the training set, with $\lambda$ chosen by cross-validation. Report the test error obtained.
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(d) Fit a lasso model on the training set, with $\lambda$ chosen by crossvalidation. Report the test error obtained, along with the number of non-zero coefficient estimates.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(e) Fit a PCR model on the training set, with M chosen by crossvalidation. Report the test error obtained, along with the value of M selected by cross-validation.
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(f) Fit a PLS model on the training set, with M chosen by crossvalidation. Report the test error obtained, along with the value of M selected by cross-validation.
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(g) Comment on the results obtained. How accurately can we predict the number of college applications received? Is there much difference among the test errors resulting from these five approaches?
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+### Features
+
+We have seen that as the number of features used in a model increases, the training error will necessarily decrease, but the test error may not. We will now explore this in a simulated data set.
+
+(a) Generate a data set with (p = 20) features, (n = 1,000) observations, and an associated quantitative response vector generated according to the model $$\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}$$, where ($\boldsymbol{\beta}$) has some elements that are exactly equal to zero.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(b) Split your data set into a training set containing (100) observations and a test set containing (900) observations.
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(c) Perform best subset selection on the training set, and plot the training set MSE associated with the best model of each size.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(d) Plot the test set MSE associated with the best model of each size.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+(e) For which model size does the test set MSE take on its minimum value? Comment on your results. If it takes on its minimum value for a model containing only an intercept or a model containing all of the features, then play around with the way that you are generating the data in (a) until you come up with a scenario in which the test set MSE is minimized for an intermediate model size.
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(f) How does the model at which the test set MSE is minimized compare to the true model used to generate the data? Comment on the coefficient values.
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(g) Create a plot displaying $\sqrt{\Sum_{j=1}^{p}(\beta_{j}-\hat{\beta}_{j}^{r})^{2}}$ for a range of values of ($r$), where $\hat{\beta}_{j}^{r}$ is the $j$th coefficient estimate for the best model containing ($r$) coefficients. Comment on what you observe. How does this compare to the test MSE plot from (d)?
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+
+### Boston
+
+We will now try to predict per capita crime rate in the Boston data set.
+
+```{r}
+data(Boston,package = "MASS")
+```
+(a) Try out some of the regression methods explored in this chapter, such as best subset selection, the lasso, ridge regression, and PCR. Present and discuss results for the approaches that you consider.
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(b) Propose a model (or set of models) that seem to perform well on this data set, and justify your answer. Make sure that you are evaluating model performance using validation set error, crossvalidation, or some other reasonable alternative, as opposed to using training error.
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+(c) Does your chosen model involve all of the features in the data set? Why or why not?
+
+
+Your code:
+```{r,echo=TRUE}
+#
+#
+```
+
+Your answer:
+
+~~~
+Please write your answer in full sentences.
+
+
+~~~
+
+
+
+~~~
+
+## Additional Material
+
+
+### [Advanced] Regularized Regression using Predictive Modeling Platforms in R
+
+As always, here are ways to fit regularized regression with the usual 4 packages.
+- mlr3 (https://mlr3book.mlr-org.com)
+- tidymodels (https://www.tidymodels.org/)
+- caret (https://topepo.github.io/caret/)
+- h2o (https://docs.h2o.ai/h2o/latest-stable/h2o-r/docs/index.html)
+
+```{r,echo=show_code}
+# split the data
+index <- sample(1:nrow(ames_raw), 0.7*nrow(ames_raw))
+vars <- c("SalePrice","Lot Area","Gr Liv Area","Full Bath")
+train <- ames_raw[ index, vars]
+test  <- ames_raw[-index, vars]
+colnames(train) <- make.names(colnames(train))
+colnames(test)  <- make.names(colnames(test))
+
+# mlr3 TaskRegr
+train$SalePrice <- log(train$SalePrice)
+```
+
+
+#### Regularized regression using mlr3
+
+```{r,echo=show_code}
+# load packages and data
+library(mlr3)
+library(mlr3learners)
+
+# fit a model
+
+task <- as_task_regr(train, target ="SalePrice",id = "ames_raw")
+
+# TaskRegr$new(id = "ames_raw", backend = train, target ="SalePrice")
+learner <- lrn("regr.glmnet", predict_type = "response",alpha=0)
+learner$train(task)
+prediction=predict(learner,newdata=test)
+```
+
+#### Regularized regression using [tidymodels](https://www.tidymodels.org/)
+
+```{r,echo=show_code}
+# load packages and data
+library(tidymodels)
+library(dotwhisker)
+# fit a model
+
+norm_recipe <- 
+  recipe(
+    SalePrice ~ ., data = train
+  ) %>%  prep(training = train, retain = TRUE)
+# Now let's fit the model using the processed version of the data
+
+coef_path_values <- c(0, 10^seq(from=-7,to=-1,length=100))
+glmn_fit <- 
+  linear_reg(penalty = 0.001, mixture = 0) %>% 
+  set_engine("glmnet", path_values = coef_path_values) %>%
+  fit(SalePrice ~ ., data = bake(norm_recipe, new_data = NULL))
+
+test_normalized <- bake(norm_recipe, new_data = test, all_predictors())
+
+test_results <- predict(glmn_fit, new_data = test_normalized)
+
+
+```
+
+#### Regularized regression using caret
+
+```{r,echo=show_code}
+# load packages and data
+library(caret)
+
+# setup grid
+L2Grid <- expand.grid(alpha=0,lambda=10^seq(from=-7,to=-1,length=100))
+# fit a model
+ctrl <- trainControl(method = "CV")
+glmnet_model <- train(SalePrice ~ ., data = train, method = "glmnet", trControl = ctrl,tuneGrid = L2Grid)
+ggplot(glmnet_model)
+glmnet_model %>% summary %>% print
+coef(glmnet_model$finalModel, glmnet_model$bestTune$lambda) %>% print
+prediction=predict(glmnet_model,newdata = test)
+
+```
+
+#### Regularized regression using h2o
+
+
+```{r,echo=show_code,eval=FALSE}
+# load packages and data
+library(h2o)
+packageVersion("h2o")
+localH2O <- h2o.init(nthreads = -1, max_mem_size="4g") # Starting H2O
+train_hf <- as.h2o(train) # Serving the data to H2O
+test_hf <- as.h2o(test)
+```
+
+##### Fitting Ridge regression
+```{r h2o_fit_glm,echo=show_code,eval=FALSE}
+# https://github.com/barupal/hands-on-machine-learning-with-r/blob/master/03-regularized-glm-models.Rmd
+# create hyperparameter grid
+hyper_params <- list(alpha=0,lambda=10^seq(from=-7,to=-1,length=10))
+
+# perform grid search
+grid <- h2o.grid(y = "SalePrice",                               #response variable 
+                 x = c("SalePrice","Lot.Area","Gr.Liv.Area","Full.Bath"),  #predictor variables
+                training_frame = train_hf, 
+                nfolds = 5,
+                keep_cross_validation_predictions = TRUE,
+                algorithm = "glm",
+                grid_id = "grid_search", 
+                hyper_params = hyper_params
+)
+# Sort the grid models by MSE
+sorted_grid <- h2o.getGrid("grid_search", sort_by = "mse", decreasing = FALSE)
+sorted_grid
+best_h2o_model <- sorted_grid@model_ids[[1]]
+best_model <- h2o.getModel(best_h2o_model)
+# assess performance
+h2o.mse(best_model)
+h2o.rmse(best_model)
+# get optimal parameters
+best_model@parameters$lambda
+best_model@parameters$alpha
+
+prediction=predict(best_model,newdata = test_hf)
+#h2o.exportFile(prediction, "/tmp/pred.csv", force = TRUE) #export prediction result as a file
+
+h2o.shutdown(prompt =F) 
+```
+
+## Advanced Content
+
+### Stein's Estimator and shrinkage
+So far, we have seen how least squares perform well, even in cases where the true model is not linear.  Then, the natural question we may ask is, can we find an estimator that is better than least squares?  Which @stein1956inadmissibility worked on, and later @james1961estimation improved upon. It is called the James-Stein estimator or just Stein's estimator.  
+
+Stein's estimator is defined as \footnote{In general Stein estimator is $(1-\alpha)\hat{\boldsymbol{\beta}}_{LS}$ for some positive number $\alpha$ less than 1.  }
+$$\tilde{\boldsymbol{\beta}}_{stein}=\left(1-\frac{(p-2)\sigma^2}{\parallel \hat{\boldsymbol{\beta}}_{LS}\parallel^2}\right)\hat{\boldsymbol{\beta}}_{LS}$$.
+
+According to Stein, for $p>2$
+\begin{eqnarray*}
+E\parallel \tilde{\boldsymbol{\beta}}_{stein} - \boldsymbol{\beta}_{best}\parallel^2\leq E\parallel \tilde{\boldsymbol{\beta}}_{LS} -\boldsymbol{\beta}_{best}\parallel^2
+\end{eqnarray*}
+
+To put it in simple English, the estimator obtained by shirking the LS estimator by $\left(1-\frac{(p-2)\sigma^2}{\parallel \hat{\boldsymbol{\beta}}_{LS}\parallel^2}\right)$ is a better estimator than LS.  This is puzzling if you think carefully about it, given that LS is BLUE. Also, there is not even a tuning parameter. The only thing that seems to matter is $\frac{\sigma^2}{\parallel \hat{\boldsymbol{\beta}}_{LS}\parallel^2}$.  The proof is not hard; you can find it at the bottom.  But the important takeaway message is that we can do better than LS by shrinking the estimates.
+
+### Methods to Control Model Complexity
+
+Regression is used for a variety of problems 
+  - prediction: stock price in the future
+	- estimation: denoising, smoothing
+	- understanding: figure out what variable(s) are important
+
+A critical characteristic in all situations is that we want a generalizable model. Thus, we often prefer a simpler model over a complex model (why?).  This principle is called Occam's razor.  (Note that a simpler model does not guarantee generalizability. )
+What methods are available for us to control the model complexity?
+
+For orthogonal $X_j$ $j=1,\cdots,p$, we can use the shrinkage method as we saw in the Stein estimator $$\tilde{\boldsymbol{\beta}}=\hat{\boldsymbol{\beta}}_{LS}\left(1-\frac{(p-2)\sigma^2}{\parallel\hat{\boldsymbol{\beta}}_{LS}\parallel^2}\right)$$
+
+Another method is to use a threshold.  There is hard thresholding, where we set all the coefficients that do not pass a certain threshold to zero.
+\begin{eqnarray}
+\tilde{\beta}_j=\hat{\beta}_j1_{\hat{\beta}_j>\lambda}=\left\{ \begin{array}{ll}
+\hat{\beta}_j & \mid\hat{\beta}_j\mid > \lambda\\
+0 &\verb|otherwise|\\
+\end{array}
+\right.
+\end{eqnarray}
+An alternative is soft thresholding, where we combine shrinkage with hard thresholding.
+\begin{eqnarray}
+\tilde{\beta}_j=sgn(\hat{\beta}_j)[\mid\hat{\beta}_j\mid-\lambda]_{+}=\left\{ \begin{array}{ll}
+\tilde{\beta}_j=\hat{\beta}_j-\lambda & \verb|if |\mid\hat{\beta}_j\mid > \lambda\\
+\tilde{\beta}_j=0 & \verb|if |\mid\hat{\beta}_j\mid \leq \lambda \\
+\end{array}
+\right.
+\end{eqnarray}
+
+But what can we do in a more general case where $X$ is not orthogonal or $p$ is bigger than $n$?  One popular thing nowadays is putting a penalty or constraint on the model complexity.  The two most popular ways are the subset selection and shrinkage methods.
+
+#### subset selection
+
+Subset selection is most commonly done by restricting the number of none zero $\tilde{\beta}_j$ to be less than some constant $k$.  But solving that is unfeasible when $p$ is large since it is an N-P hard problem.   In the orthogonal $X$ situation, ordering the $\tilde{\beta}_j$ and choosing $k$ largest subset selection is equivalent to hard thresholding.
+
+#### Shrinkage
+
+For general $X$, we can also perform shrinkage. The idea is to minimize $\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta}\parallel^2$ subject to some constraint.  When we set the constraint as $\parallel\boldsymbol{\beta}\parallel^2<t$, the result is called the ridge regression.  Similarly, if we choose the constraint as $\mid\boldsymbol{\beta}\mid<t$, then the result is known as the LASSO (Least Absolute Shrinkage and Selection Operator) regression.  It turns out that this constrained minimization problem can be generalized to minimizing an objective function of the form $\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2+\lambda \parallel \boldsymbol{\beta} \parallel_{L_p}$ where $\parallel \parallel_{L_p}$ is called the $L_p$ norm and $\lambda$ is the complexity parameter that controls the amount of shrinkage.
+
+##### Ridge Regression
+
+Ridge Regression is used when you don't have collinearity in your predictor variables.  We can consider it a constraint optimization under the $l_2$ norm or shrinkage estimation. So, for a general setting:
+
+observation  | predictor 1     | predictor 2     | $\cdots$ | predictor p     | response 
+-------------|-----------------|-----------------|----------|-----------------|----------
+1            | $x_{11}$        | $x_{12}$        | $\cdots$ | $x_{1p}$        | $y_1$
+2            | $x_{21}$        | $x_{22}$        | $\cdots$ | $x_{2p}$        | $y_2$
+$\vdots$     | $\vdots$        | $\vdots$        | $\ddots$ | $\vdots$        | $\vdots$
+n            | $x_{n1}$        | $x_{n2}$        | $\cdots$ | $x_{np}$        | $y_n$
+&nbsp;       | $\mathbf{X}_{1}$| $\mathbf{X}_{2}$| $\cdots$ | $\mathbf{X}_{p}$| $\mathbf{y}$
+             
+             
+$$
+\mathbf{X}=\left[
+\begin{array}{cccc}
+\mathbf{X}_{1}&\mathbf{X}_{2}&\cdots &\mathbf{X}_{p} \\
+\end{array}
+\right]\verb|, and |
+\boldsymbol{\beta}=\left[
+\begin{array}{c}
+\beta_{1} \\
+\vdots\\
+\beta_{p} \\
+\end{array}
+\right]
+$$
+
+ To find the ridge regression estimate, we want to minimize the objective function of form $\left(\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2+\lambda\parallel \boldsymbol{\beta}\parallel^2\right)$.  As constrained optimization, we want to minimize $\parallel \mathbf{y}-\mathbf{X}\beta \parallel^2$ subject to $\parallel \boldsymbol{\beta} \parallel^2 \leq t$ constraint for some constant $t$.  
+ 
+
+ 
+ Imagine a contour defined by $\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2$ with its lowest at $\hat{\boldsymbol{\beta}}_{LS}$.  Now imagine a circle around the origin where the diameter is defined by a tuning parameter $t$ such that it satisfies $\parallel \boldsymbol{\beta} \parallel^2 <t$.  Our solution can only be inside this circle.  Without any constraint on $t$, i.e. $t=\infty$ we will get $\hat{\boldsymbol{\beta}}_{LS}$ as an estimate that minimizes $\parallel \mathbf{y}-\mathbf{X}\beta \parallel^2$. But as t gets smaller, we depart from our $\hat{\boldsymbol{\beta}}_{LS}$ since the solution has to be within the circle.  Thus, we can see that the solution we want is on the circle closest to $\hat{\boldsymbol{\beta}}_{LS}$, which is the point circle that touches the ellipse.  Equivalently, our solution can be thought of as shrinkage.  As t gets smaller, we are shrinking our $\hat{\boldsymbol{\beta}}_{LS}$  toward zero on the diagonal line from $\hat{\boldsymbol{\beta}}_{LS}$ to the origin.
+ 
+ ![Ridge Image](Images/Ridge.png)
+
+
+So lets solve for $\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2+\lambda \parallel \boldsymbol{\beta} \parallel^2$
+\begin{eqnarray*}
+\frac{\partial }{\partial \boldsymbol{\beta}}\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2+\lambda \parallel \boldsymbol{\beta} \parallel^2&=&-2( \mathbf{y}-\mathbf{X}\boldsymbol{\beta})X +2\lambda\boldsymbol{\beta}\\
+&\Rightarrow&  -\mathbf{y}^T\mathbf{X}+\hat{\boldsymbol{\beta}}\mathbf{X}^T\mathbf{X} + \lambda\hat{\boldsymbol{\beta}}=0\\
+&=& \hat{\boldsymbol{\beta}}(\mathbf{X}^T\mathbf{X} +\lambda I)=\mathbf{y}^TX\\
+&=& \hat{\boldsymbol{\beta}}=(\mathbf{X}^T\mathbf{X} +\lambda I)^{-1}\mathbf{y}^TX\\
+\end{eqnarray*}
+Hence we see $\hat{\boldsymbol{\beta}}_{ridge}=(\mathbf{X}^T\mathbf{X} +\lambda \mathbf{I})^{-1}\mathbf{y}^T\mathbf{X}$.
+
+##### LASSO (Least Absolute Shrinkage and Selection Operator)
+
+The idea of LASSO is similar to Ridge Regression. Using the same setting as before, the only difference is we want to minimize an objective function of the form $\left(\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2+\lambda\mid \boldsymbol{\beta}\mid\right)$ or equivalently perform constraint minimization of $\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2$ subject to $\mid \boldsymbol{\beta} \mid\leq t$ constraint ($\mid \boldsymbol{\beta} \mid=\sum^p_{j=1}\mid \beta_j\mid$).
+
+Geometrically speaking (for $p=2$ case) we want to find $\hat{\boldsymbol{\beta}}$ that is closest to $\hat{\boldsymbol{\beta}}_{LS}$ within the diamond shaped region that is $\mid \boldsymbol{\beta} \mid<t$.
+Unlike $L_2$ norm, $L_1$ norm has corners and edges that touch the contour of $\parallel \mathbf{y}-\mathbf{X}\boldsymbol{\beta} \parallel^2$ first most of the time.  This acts as the variable selector in high-dimensional space.  Thus, when we look at the solution path of LASSO, we see some coefficients take on the value of zero.
+
+ ![Lasso Image](Images/Lasso.png)
+
+As $t$ increases, we gradually see more and more $\boldsymbol{\beta}$s coming into our model.  And this goes on until all $t$ is so big that the diamond shaped region includes $\hat{\boldsymbol{\beta}}_{LS}$, in which case, all the estimates of $\hat{\boldsymbol{\beta}}$ becomes $\hat{\boldsymbol{\beta}}_{LS}$.  Or conversely, if you decrease your $t$, to zero your estimated  $\hat{\boldsymbol{\beta}}$ starts to get shrunk toward zero from $\hat{\boldsymbol{\beta}}_{LS}$.  So you can see that we are doing shrinkage estimation. Then, we want to choose $t$ to get the sparsest model with the lowest cross-validation error.
+
+ ![Lasso Path Image](Images/Lasso_path.png)
+
+
+### Proofs
+
+#### Stein's lemma
+We first need Stein's lemma.`
+\noindent{\bf Stein's Lemma} 
+According to Stein's lemma, for $Z\sim N\left(\mu,\sigma^2\right)$, $E\left[(z-\mu)g(z)\right]=\sigma^2E\left[g'(z)\right]$.
+\subsubsection*{proof}
+\begin{eqnarray*}
+E\left[(z-\mu)g(z)\right]&=&\int(z-\mu)g(z)\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{-(z-\mu)^2}{2\sigma^2}}dz\\
+&=&-\sigma^2g(z)\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{-(z-\mu)^2}{2\sigma^2}}\Bigr|^{\infty}_{-\infty}+\sigma^2\int g'(z)\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{-(z-\mu)^2}{2\sigma^2}}\\
+&=&\sigma^2E\left[g'(z)\right]
+\end{eqnarray*}
+
+#### Proof: Stein's estimator outperforms LS
+
+We are ready to prove that Stein's estimator outperforms the least square's estimate.  We will denote for the simplicity $\hat{\boldsymbol{\beta}}_{LS} = \boldsymbol{\beta}$ and $\boldsymbol{\beta}_{best} =\boldsymbol{\theta}$.
+\begin{eqnarray*}
+E\parallel \boldsymbol{\beta}-\boldsymbol{\theta} \parallel ^2&=&E\left[\sum^p_{i=1}\left( \beta_i-\theta_i \right)^2\right]\\
+&=&p\sigma^2
+\end{eqnarray*}
+\begin{eqnarray*}
+E\left[\Biggl|\Biggl|\left(1-\frac{(p-2)\sigma^2}{\parallel \boldsymbol{\beta}\parallel^2}\right)\boldsymbol{\beta} -\boldsymbol{\theta} \Biggr|\Biggr| ^2\right]&=&E\left[\Biggl|\Biggl| (\boldsymbol{\beta}-\boldsymbol{\theta})-\frac{(p-2)\sigma^2}{\parallel \boldsymbol{\beta}\parallel^2}\boldsymbol{\beta}\Biggr|\Biggr|^2\right]\\
+&=&E\parallel\boldsymbol{\beta}-\boldsymbol{\theta}\parallel^2+E\left[\frac{(p-2)^2\sigma^4}{\parallel \boldsymbol{\beta}\parallel^2}\right]-2E\left[ \langle \boldsymbol{\beta}-\boldsymbol{\theta}, \frac{(p-2)\sigma^2}{\parallel \boldsymbol{\beta}\parallel^2}\boldsymbol{\beta} \rangle \right]=(*)\\
+\end{eqnarray*}
+Since $E\left[ \langle \boldsymbol{\beta}-\theta, \frac{(p-2)\sigma^2}{\parallel \boldsymbol{\beta}\parallel^2}\boldsymbol{\beta} \rangle \right]$ can be simplified as follows
+\begin{eqnarray*}
+E\left[\sum^p_{i=1}(\boldsymbol{\beta}_i-\theta_i)\frac{(p-2)\sigma^2}{\parallel \boldsymbol{\beta}\parallel^2}\boldsymbol{\beta}_i \right] &=& E\left[\sum^p_{i=1}(\boldsymbol{\beta}_i-\theta_i)\frac{(p-2)\sigma^2}{ \boldsymbol{\beta}_i^2+\sum^p_{j\neq i} \boldsymbol{\beta}_j^2}\boldsymbol{\beta}_i \right]\\
+\end{eqnarray*}
+Letting $\frac{(p-2)\sigma^2}{ \boldsymbol{\beta}_i^2+\sum^p_{j\neq i} \boldsymbol{\beta}_j^2}\boldsymbol{\beta}_i=g(x_i)$, we can use Stein's lemma. Hence
+\begin{eqnarray*}
+ E\left[\sum^p_{i=1}(\beta_i-\theta_i)\frac{(p-2)\sigma^2}{ \beta_i^2+\sum^p_{j\neq i} \beta_j^2}\beta_i \right]&=& \sigma^2\sum^p_{i=1}E\left[\left(\frac{(p-2)\sigma^2}{ \beta_i^2+\sum^p_{j\neq i} \beta_j^2}\beta_i \right)'\right]\\
+&=&\sigma^2\sum^p_{i=1} E\left[\frac{(p-2)\sigma^2}{ \parallel \boldsymbol{\beta}\parallel^2}- \frac{(p-2)\sigma^2 2\beta_i^2}{ \parallel \boldsymbol{\beta}\parallel^2}\right]\\
+&=&\sigma^2E\left[\frac{p(p-2)\sigma^2}{ \parallel \boldsymbol{\beta}\parallel^2}- \frac{2(p-2)\sigma^2}{ \parallel \boldsymbol{\beta}\parallel^2}\right]\\
+&=&E\left[\frac{(p-2)^2\sigma^4}{\parallel \boldsymbol{\beta}\parallel^2}\right]
+\end{eqnarray*}
+
+Therefore:
+\begin{eqnarray*}
+(*)&=&E\left[\parallel\boldsymbol{\beta}-\boldsymbol{\theta}\parallel^2+\frac{(p-2)^2\sigma^4}{\parallel \boldsymbol{\beta}\parallel^2}-2\frac{(p-2)^2\sigma^4}{\parallel \boldsymbol{\beta}\parallel^2}\right]\\
+&=&E\left[\parallel\boldsymbol{\beta}-\boldsymbol{\theta}\parallel^2-\frac{(p-2)^2\sigma^4}{\parallel \boldsymbol{\beta}\parallel^2}\right]\leq E\left[\parallel\boldsymbol{\beta}-\boldsymbol{\theta}\parallel^2\right] = p\sigma^2
+\end{eqnarray*}
+
+### Reference
