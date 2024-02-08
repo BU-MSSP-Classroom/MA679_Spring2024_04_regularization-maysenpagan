@@ -61,6 +61,7 @@ Please take a look at the Ames Hoursing data.
 library(AmesHousing)
 library(tidyverse)
 library(caret)
+library(glmnet)
 ?ames_raw
 ```
 
@@ -72,6 +73,7 @@ Use data of `ames_raw` up to 2008 predict the housing price for the later years.
 #standardize variables im going to use
 ames_raw$`Overall Qual` <- scale(ames_raw$`Overall Qual`)
 ames_raw$`Lot Area` <- scale(log(ames_raw$`Lot Area`))
+ames_raw$SalePrice <- scale(log(ames_raw$SalePrice))
 ames_raw$`Garage Cars` <- scale(ames_raw$`Garage Cars`)
 ames_raw$`TotRms AbvGrd` <- scale(ames_raw$`TotRms AbvGrd`)
 #change year remod/add to years since minimum year (1950)
@@ -109,16 +111,38 @@ Here are few rules:
 
 Your code:
 ```{r,echo=TRUE}
-lmfit_2008<- lm(log(SalePrice) ~ `Overall Qual` + FoundationBrkTil + FoundationCBlock + FoundationPConc + FoundationSlab + FoundationStone + FoundationWood + `Year Remod/Add` + (`TotRms AbvGrd`*`Lot Area`) + (`Garage Cars`*`Lot Area`), data = ames_raw_2008)
+#new data set
+new_2008 <- ames_raw_2008 %>% select(SalePrice, `Overall Qual`, FoundationBrkTil, FoundationCBlock, FoundationPConc, FoundationSlab, FoundationStone, FoundationWood, `Year Remod/Add`, `TotRms AbvGrd`, `Lot Area`, `Garage Cars`)
+new_2008 <- na.omit(new_2008)
+#choose best lambda using CV
+f <- as.formula(SalePrice ~ `Overall Qual` + FoundationBrkTil + FoundationCBlock + FoundationPConc + FoundationSlab + FoundationStone + FoundationWood + `Year Remod/Add` + (`TotRms AbvGrd`*`Lot Area`) + (`Garage Cars`*`Lot Area`))
 
-pred_2009<-exp(predict(lmfit_2008,newdata=ames_raw_2009))
+y = new_2008$SalePrice
+x = model.matrix(f, new_2008)[,-1]
+set.seed(123)
+ridge.cv = cv.glmnet(x, y, alpha=0)
+plot(ridge.cv)
+lambda <- ridge.cv$lambda.1se 
+
+#ridge regression
+ridge <- glmnet(x, y, alpha = 0, lambda = lambda)
+
+newx <- model.matrix(f, ames_raw_2009)[,-1]
+pred_2009<-exp(predict(ridge,newdata=ames_raw_2009,newx = newx))
+calc_loss(pred_2009,ames_raw_2009$SalePrice)
+
+#lasso regression
+lasso <- glmnet(x, y, alpha = 1, lambda = lambda)
+
+newx <- model.matrix(f, ames_raw_2009)[,-1]
+pred_2009<-exp(predict(lasso,newdata=ames_raw_2009,newx = newx))
 calc_loss(pred_2009,ames_raw_2009$SalePrice)
 ```
 
 Your answer:
 
 ~~~
-Please write your answer in full sentences.
+
 
 
 ~~~
