@@ -59,6 +59,8 @@ show_code <- TRUE
 Please take a look at the Ames Hoursing data.
 ```{r}
 library(AmesHousing)
+library(tidyverse)
+library(caret)
 ?ames_raw
 ```
 
@@ -66,6 +68,22 @@ library(AmesHousing)
 
 Use data of `ames_raw` up to 2008 predict the housing price for the later years.
 ```{r,echo=show_code}
+
+#standardize variables im going to use
+ames_raw$`Overall Qual` <- scale(ames_raw$`Overall Qual`)
+ames_raw$`Lot Area` <- scale(log(ames_raw$`Lot Area`))
+ames_raw$`Garage Cars` <- scale(ames_raw$`Garage Cars`)
+ames_raw$`TotRms AbvGrd` <- scale(ames_raw$`TotRms AbvGrd`)
+#change year remod/add to years since minimum year (1950)
+min_year <- min(unique(ames_raw$`Year Remod/Add`))
+ames_raw$`Year Remod/Add` <- ames_raw$`Year Remod/Add`-min_year
+#standardized years since 1950
+ames_raw$`Year Remod/Add` <- scale(ames_raw$`Year Remod/Add`)
+#one hot encode foundation variable
+dummy <- dummyVars(" ~ Foundation", data=ames_raw)
+final_df <- data.frame(predict(dummy, newdata=ames_raw))
+ames_raw <- cbind(ames_raw, final_df)
+
 ames_raw_2008=ames_raw[ames_raw$`Yr Sold`<2008,]
 ames_raw_2009=ames_raw[ames_raw$`Yr Sold`>=2008,]
 ```
@@ -91,8 +109,10 @@ Here are few rules:
 
 Your code:
 ```{r,echo=TRUE}
-#
-#
+lmfit_2008<- lm(log(SalePrice) ~ `Overall Qual` + FoundationBrkTil + FoundationCBlock + FoundationPConc + FoundationSlab + FoundationStone + FoundationWood + `Year Remod/Add` + (`TotRms AbvGrd`*`Lot Area`) + (`Garage Cars`*`Lot Area`), data = ames_raw_2008)
+
+pred_2009<-exp(predict(lmfit_2008,newdata=ames_raw_2009))
+calc_loss(pred_2009,ames_raw_2009$SalePrice)
 ```
 
 Your answer:
