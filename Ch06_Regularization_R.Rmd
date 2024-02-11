@@ -69,25 +69,24 @@ library(glmnet)
 
 Use data of `ames_raw` up to 2008 predict the housing price for the later years.
 ```{r,echo=show_code}
+ames_raw2 <- ames_raw
 
 #standardize variables im going to use
-ames_raw$`Overall Qual` <- scale(ames_raw$`Overall Qual`)
-ames_raw$`Lot Area` <- scale(log(ames_raw$`Lot Area`))
-ames_raw$SalePrice <- scale(log(ames_raw$SalePrice))
-ames_raw$`Garage Cars` <- scale(ames_raw$`Garage Cars`)
-ames_raw$`TotRms AbvGrd` <- scale(ames_raw$`TotRms AbvGrd`)
+#ames_raw2$`Overall Qual` <- scale(ames_raw2$`Overall Qual`)
+ames_raw2$`Lot Area` <- scale(log(ames_raw2$`Lot Area`))
+ames_raw2$SalePrice <- scale(log(ames_raw2$SalePrice))
 #change year remod/add to years since minimum year (1950)
-min_year <- min(unique(ames_raw$`Year Remod/Add`))
-ames_raw$`Year Remod/Add` <- ames_raw$`Year Remod/Add`-min_year
+min_year <- min(unique(ames_raw2$`Year Remod/Add`))
+ames_raw2$`Year Remod/Add` <- ames_raw2$`Year Remod/Add`-min_year
 #standardized years since 1950
-ames_raw$`Year Remod/Add` <- scale(ames_raw$`Year Remod/Add`)
+ames_raw2$`Year Remod/Add` <- scale(ames_raw2$`Year Remod/Add`)
 #one hot encode foundation variable
-dummy <- dummyVars(" ~ Foundation", data=ames_raw)
-final_df <- data.frame(predict(dummy, newdata=ames_raw))
-ames_raw <- cbind(ames_raw, final_df)
+# dummy <- dummyVars(" ~ Foundation", data=ames_raw2)
+# final_df <- data.frame(predict(dummy, newdata=ames_raw2))
+# ames_raw2 <- cbind(ames_raw2, final_df)
 
-ames_raw_2008=ames_raw[ames_raw$`Yr Sold`<2008,]
-ames_raw_2009=ames_raw[ames_raw$`Yr Sold`>=2008,]
+ames_raw_2008=ames_raw2[ames_raw2$`Yr Sold`<2008,]
+ames_raw_2009=ames_raw2[ames_raw2$`Yr Sold`>=2008,]
 ```
 
 Use the same loss function calculator.
@@ -112,10 +111,10 @@ Here are few rules:
 Your code:
 ```{r,echo=TRUE}
 #new data set
-new_2008 <- ames_raw_2008 %>% select(SalePrice, `Overall Qual`, FoundationBrkTil, FoundationCBlock, FoundationPConc, FoundationSlab, FoundationStone, FoundationWood, `Year Remod/Add`, `TotRms AbvGrd`, `Lot Area`, `Garage Cars`)
+new_2008 <- ames_raw_2008 %>% select(SalePrice, `Overall Qual`, Foundation, `Year Remod/Add`, `TotRms AbvGrd`, `Lot Area`, `Garage Cars`)
 new_2008 <- na.omit(new_2008)
 #choose best lambda using CV
-f <- as.formula(SalePrice ~ `Overall Qual` + FoundationBrkTil + FoundationCBlock + FoundationPConc + FoundationSlab + FoundationStone + FoundationWood + `Year Remod/Add` + (`TotRms AbvGrd`*`Lot Area`) + (`Garage Cars`*`Lot Area`))
+f <- as.formula(SalePrice ~ `Overall Qual` + Foundation + `Year Remod/Add` + (`TotRms AbvGrd`*`Lot Area`) + (`Garage Cars`*`Lot Area`))
 
 y = new_2008$SalePrice
 x = model.matrix(f, new_2008)[,-1]
@@ -137,14 +136,13 @@ lasso <- glmnet(x, y, alpha = 1, lambda = lambda)
 newx <- model.matrix(f, ames_raw_2009)[,-1]
 pred_2009<-exp(predict(lasso,newdata=ames_raw_2009,newx = newx))
 calc_loss(pred_2009,ames_raw_2009$SalePrice)
+
 ```
 
 Your answer:
 
 ~~~
-
-
-
+Based on the calculated loss for each method it appears that LASSO performs better in prediction than RIDGE regression.
 ~~~
 
 - For each of the models you've run, can you interpret which variable impacts the outcome the most?
@@ -168,8 +166,7 @@ Please write your answer in full sentences.
 
 Your code:
 ```{r,echo=TRUE}
-#
-#
+
 ```
 
 Your answer:
@@ -206,8 +203,8 @@ In this exercise, we will generate simulated data, and will then use this data t
 
 Your code:
 ```{r,echo=TRUE}
-#
-#
+X <- rnorm(100)
+e <- rnorm(100, mean = 0, sd = 3)
 ```
 
 
@@ -215,8 +212,11 @@ Your code:
 
 Your code:
 ```{r,echo=TRUE}
-#
-#
+b0 <- 0.85
+b1 <- 0.78
+b2 <- 2
+b3 <- 1.2
+Y <- b0 + (b1*X) + (b2*(X^2)) + (b3*(X^3)) + e
 ```
 
 
@@ -224,8 +224,15 @@ Your code:
 
 Your code:
 ```{r,echo=TRUE}
-#
-#
+library(leaps)
+sim_data <- data.frame(Y = Y, X = X)
+formula <- Y~X+I(X^2)+I(X^3)+I(X^4)+I(X^5)+I(X^6)+I(X^7)+I(X^8)+I(X^9)+I(X^10)
+
+reg_fit <- regsubsets(x = formula, data = sim_data)
+reg_summary <- summary(reg_fit)
+reg_summary$rsq
+reg_summary$cp
+reg_summary$bic
 ```
 
 Your answer:
